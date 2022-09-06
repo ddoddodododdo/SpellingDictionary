@@ -1,3 +1,2 @@
 # Auto detect text files and perform LF normalization
 * text=auto
-PackagesGroupDocs.Total.22.8.0GroupDocs.Total.22.8.0.nupkg filter=lfs diff=lfs merge=lfs -text
