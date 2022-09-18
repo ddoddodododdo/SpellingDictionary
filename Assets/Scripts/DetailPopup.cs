@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class GameManager : MonoBehaviour
+public class DetailPopup : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public Button CloseButton;
+
     void Start()
     {
         
@@ -14,5 +16,10 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void CloseDetailPopup()
+    {
+        gameObject.SetActive(false);
     }
 }
