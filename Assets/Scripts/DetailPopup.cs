@@ -7,15 +7,12 @@ public class DetailPopup : MonoBehaviour
 {
     public Button CloseButton;
 
-    void Start()
+    private void Awake()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        CloseButton.onClick.AddListener(() =>
+        {
+            CloseDetailPopup();
+        });
     }
 
     public void CloseDetailPopup()

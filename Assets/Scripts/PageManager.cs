@@ -5,19 +5,27 @@ using UnityEngine.UI;
 
 public class PageManager : MonoBehaviour
 {
-    //모든 스프라이트
-    public List<Sprite> WordSpriteList;
-    public List<Sprite> DetailSpriteList;
+    public static PageManager instance;
 
+    public enum WordType
+    {
+        Spacing,
+        Spelling,
+        BookMark
+    }
 
     //화면에 보여주는거
     public List<Image> WordImageList;
+
+    public WordType PageType;
 
     private Image DetailPopup;
 
     private List<Button> _wordButtonList;
     private List<RectTransform> _wordRectList;
 
+    private List<Sprite> _wordSpriteList;
+    private List<Sprite> _descSpriteList;
 
     private int _clickIndex = 0;
     private int _pageIndex = 0;
@@ -27,6 +35,12 @@ public class PageManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null)
+            Destroy(gameObject);
+        instance = this;
+
+        PageType = WordType.Spelling;
+
         _wordRectList = new List<RectTransform>(WordImageList.Count);
         _wordButtonList = new List<Button>(WordImageList.Count);
 
@@ -43,31 +57,50 @@ public class PageManager : MonoBehaviour
 
     private void Start()
     {
-        Init();
         DetailPopup = GameManager.Instance.DetailPopup;
+        Init();
     }
 
     private void Init()
     {
-        for(int i = 0; i < _wordButtonList.Count; i++)
+        foreach(var button in _wordButtonList)
         {
-            _wordButtonList[i].onClick.AddListener(() => {
-                _clickIndex = i;
+            button.onClick.AddListener(() =>
+            {
+                _clickIndex = _wordButtonList.IndexOf(button);
                 ShowDetail();
-                });
+            });
         }
+
+
         SetPage();
     }
     
     private void SetPage()
     {
+        if(PageType == WordType.Spacing)
+        {
+            _wordSpriteList = DataManager.instance.Word_Spacings;
+            _descSpriteList = DataManager.instance.Desc_Spacings;
+        }
+        else if(PageType == WordType.Spelling)
+        {
+            _wordSpriteList = DataManager.instance.Word_Spellings;
+            _descSpriteList = DataManager.instance.Desc_Spellings;
+        }
+
+
+        if (_wordSpriteList == null || _descSpriteList == null)
+            return;
+
+
         for(int i = 0; i < WordImageList.Count; i++)
         {
             int idx = i * _pageIndex + i;
-            if(WordSpriteList.Count < idx)
+            if(_wordSpriteList.Count < idx)
                 break;
 
-            WordImageList[i].sprite = WordSpriteList[i * _pageIndex + i];
+            WordImageList[i].sprite = _wordSpriteList[i * _pageIndex + i];
             _wordRectList[i].sizeDelta = new Vector2(WordImageList[i].sprite.rect.width, WordImageList[i].sprite.rect.height);
 
             Vector2 gap = _wordRectList[i].sizeDelta - _baseSize;
@@ -79,11 +112,23 @@ public class PageManager : MonoBehaviour
     private void ShowDetail()
     {
         int idx = _clickIndex * _pageIndex + _clickIndex;
-        DetailPopup.sprite = DetailSpriteList[idx];
+        DetailPopup.sprite = _descSpriteList[idx];
         DetailPopup.gameObject.SetActive(true);
     }
 
     private int GetIndex() => _clickIndex * _pageIndex + _clickIndex;
 
+
+    public void PrePage()
+    {
+        _pageIndex = Mathf.Clamp(--_pageIndex, 0, _wordButtonList.Count);
+        SetPage();
+    }
+
+    public void NextPage()
+    {
+        _pageIndex = Mathf.Clamp(++_pageIndex, 0, _wordButtonList.Count);
+        SetPage();
+    }
 
 }
