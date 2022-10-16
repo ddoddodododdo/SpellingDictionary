@@ -9,9 +9,9 @@ public class PageManager : MonoBehaviour
 
     public enum WordType
     {
-        Spacing,
+        BookMark,
         Spelling,
-        BookMark
+        Spacing
     }
 
     //화면에 보여주는거
@@ -119,6 +119,22 @@ public class PageManager : MonoBehaviour
     private int GetIndex() => _clickIndex * _pageIndex + _clickIndex;
 
 
+
+
+
+
+    /// <summary>
+    /// Buttons
+    /// </summary>
+
+    #region 버튼 함수
+    public void WordTypeButton(int type)
+    {
+        PageType = (WordType)type;
+
+        SetPage();
+    }
+
     public void PrePage()
     {
         _pageIndex = Mathf.Clamp(--_pageIndex, 0, _wordButtonList.Count);
@@ -130,5 +146,5 @@ public class PageManager : MonoBehaviour
         _pageIndex = Mathf.Clamp(++_pageIndex, 0, _wordButtonList.Count);
         SetPage();
     }
-
+    #endregion
 }
