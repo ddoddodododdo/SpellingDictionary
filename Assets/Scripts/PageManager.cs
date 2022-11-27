@@ -88,19 +88,27 @@ public class PageManager : MonoBehaviour
             _wordSpriteList = DataManager.instance.Word_Spellings;
             _descSpriteList = DataManager.instance.Desc_Spellings;
         }
-
-
+        else if (PageType == WordType.BookMark)
+        {
+            DataManager.instance.SetBookMarkData();
+            _wordSpriteList = DataManager.instance.Word_BookMark;
+            _descSpriteList = DataManager.instance.Desc_BookMark;
+        }
+     
         if (_wordSpriteList == null || _descSpriteList == null)
             return;
 
-
-        for(int i = 0; i < WordImageList.Count; i++)
+        _pageIndex = Mathf.Clamp(_pageIndex, 0, _wordSpriteList.Count % WordImageList.Count);
+        for (int i = 0; i < WordImageList.Count; i++)
         {
-            int idx = i * _pageIndex + i;
-            if(_wordSpriteList.Count < idx)
-                break;
+            int idx = i + _pageIndex * WordImageList.Count;
+            if (_wordSpriteList.Count <= idx)
+            {
+                WordImageList[i].sprite = null;
+                continue;
+            }
 
-            WordImageList[i].sprite = _wordSpriteList[i * _pageIndex + i];
+            WordImageList[i].sprite = _wordSpriteList[idx];
             _wordRectList[i].sizeDelta = new Vector2(WordImageList[i].sprite.rect.width, WordImageList[i].sprite.rect.height);
 
             Vector2 gap = _wordRectList[i].sizeDelta - _baseSize;
@@ -111,7 +119,7 @@ public class PageManager : MonoBehaviour
 
     private void ShowDetail()
     {
-        int idx = _clickIndex * _pageIndex + _clickIndex;
+        int idx = WordImageList.Count * _pageIndex + _clickIndex;
         DetailPopup.sprite = _descSpriteList[idx];
         DetailPopup.gameObject.SetActive(true);
     }
@@ -137,13 +145,13 @@ public class PageManager : MonoBehaviour
 
     public void PrePage()
     {
-        _pageIndex = Mathf.Clamp(--_pageIndex, 0, _wordButtonList.Count);
+        _pageIndex++;
         SetPage();
     }
 
     public void NextPage()
     {
-        _pageIndex = Mathf.Clamp(++_pageIndex, 0, _wordButtonList.Count);
+        _pageIndex++;
         SetPage();
     }
     #endregion
