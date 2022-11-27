@@ -18,6 +18,7 @@ public class PageManager : MonoBehaviour
     public List<Image> WordImageList;
 
     public WordType PageType;
+    public Toggle BookMarkToggle;
 
     private Image DetailPopup;
 
@@ -57,18 +58,21 @@ public class PageManager : MonoBehaviour
 
     private void Start()
     {
-        DetailPopup = GameManager.Instance.DetailPopup;
+        DetailPopup = GameManager.Instance.DetailPopup.DetailImage;
         Init();
     }
 
     private void Init()
     {
+        var detailPopup = GameManager.Instance.DetailPopup;
         foreach(var button in _wordButtonList)
         {
             button.onClick.AddListener(() =>
             {
                 _clickIndex = _wordButtonList.IndexOf(button);
+                detailPopup.CloseButton.onClick.AddListener(() => SetPage());
                 ShowDetail();
+                SetBookMarkToggle();
             });
         }
 
@@ -98,7 +102,8 @@ public class PageManager : MonoBehaviour
         if (_wordSpriteList == null || _descSpriteList == null)
             return;
 
-        _pageIndex = Mathf.Clamp(_pageIndex, 0, _wordSpriteList.Count % WordImageList.Count);
+        _pageIndex = Mathf.Clamp(_pageIndex, 0, _wordSpriteList.Count / WordImageList.Count);
+
         for (int i = 0; i < WordImageList.Count; i++)
         {
             int idx = i + _pageIndex * WordImageList.Count;
@@ -119,15 +124,34 @@ public class PageManager : MonoBehaviour
 
     private void ShowDetail()
     {
-        int idx = WordImageList.Count * _pageIndex + _clickIndex;
+        int idx = GetClickIndex();
+        if (_descSpriteList.Count <= idx)
+            return;
+
         DetailPopup.sprite = _descSpriteList[idx];
         DetailPopup.gameObject.SetActive(true);
     }
 
-    private int GetIndex() => _clickIndex * _pageIndex + _clickIndex;
+    public void SetBookMarkToggle()
+    {
+        string tempKey = GetBookMarkKey();
+        bool hasKey = PlayerPrefs.HasKey(GetBookMarkKey());
+        BookMarkToggle.isOn = hasKey;
+    }
 
-
-
+    private int GetClickIndex() => WordImageList.Count * _pageIndex + _clickIndex;
+    private string GetBookMarkKey()
+    {
+        if(PageType == WordType.BookMark)
+        {
+            if (DataManager.instance.Desc_Spellings.Contains(DetailPopup.sprite))
+                return WordType.Spelling.ToString() + DataManager.instance.Desc_Spellings.IndexOf(DetailPopup.sprite);
+            else
+                return WordType.Spacing.ToString() + DataManager.instance.Desc_Spacings.IndexOf(DetailPopup.sprite);
+        }
+        else 
+            return PageType.ToString() + GetClickIndex();
+    }
 
 
 
@@ -139,19 +163,38 @@ public class PageManager : MonoBehaviour
     public void WordTypeButton(int type)
     {
         PageType = (WordType)type;
-
+        _pageIndex = 0;
         SetPage();
     }
 
     public void PrePage()
     {
-        _pageIndex++;
+        SetBookMarkToggle();
+        _pageIndex--;
         SetPage();
     }
 
     public void NextPage()
     {
         _pageIndex++;
+        SetPage();
+    }
+
+    public void ChangedBookMarkData()
+    {
+        if (BookMarkToggle.isOn)
+        {
+            PlayerPrefs.SetInt(GetBookMarkKey(), 0);
+        }
+        else if (PlayerPrefs.HasKey(GetBookMarkKey()))
+        {
+            PlayerPrefs.DeleteKey(GetBookMarkKey());
+        }
+    }
+
+    public void ResetBookMarkData()
+    {
+        PlayerPrefs.DeleteAll();
         SetPage();
     }
     #endregion

@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public Image DetailPopup;
+    public DetailPopup DetailPopup;
 
     private void Awake()
     {

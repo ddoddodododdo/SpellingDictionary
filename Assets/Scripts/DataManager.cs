@@ -50,5 +50,4 @@ public class DataManager : MonoBehaviour
         }
     }
 
-
 }
