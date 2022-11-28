@@ -24,6 +24,7 @@ public class DetailPopup : MonoBehaviour
         {
             button.SetActive(false);
         }
+        transform.SetAsLastSibling();
     }
 
     public void CloseDetailPopup()

@@ -19,6 +19,7 @@ public class PageManager : MonoBehaviour
 
     public WordType PageType;
     public Toggle BookMarkToggle;
+    public ButtonViewer ButtonViewer;
 
     private Image DetailPopup;
 
@@ -77,7 +78,7 @@ public class PageManager : MonoBehaviour
         }
 
 
-        SetPage();
+        WordTypeButton(1);
     }
     
     private void SetPage()
@@ -109,10 +110,11 @@ public class PageManager : MonoBehaviour
             int idx = i + _pageIndex * WordImageList.Count;
             if (_wordSpriteList.Count <= idx)
             {
-                WordImageList[i].sprite = null;
+                WordImageList[i].color = Color.clear;
                 continue;
             }
 
+            WordImageList[i].color = Color.white;
             WordImageList[i].sprite = _wordSpriteList[idx];
             _wordRectList[i].sizeDelta = new Vector2(WordImageList[i].sprite.rect.width, WordImageList[i].sprite.rect.height);
 
@@ -165,6 +167,7 @@ public class PageManager : MonoBehaviour
         PageType = (WordType)type;
         _pageIndex = 0;
         SetPage();
+        ButtonViewer.SetButtonHighlight(type);
     }
 
     public void PrePage()
