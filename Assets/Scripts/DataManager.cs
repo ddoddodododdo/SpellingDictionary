@@ -16,6 +16,9 @@ public class DataManager : MonoBehaviour
     public List<Sprite> Desc_Spellings;
     public List<Sprite> Desc_BookMark;
 
+    [Header("숫자없는 단어 리스트")]
+    public List<Sprite> Word_Spacings_NoNumber;
+    public List<Sprite> Word_Spellings_NoNumber;
 
 
     private void Awake()
